@@ -228,6 +228,26 @@ The `CHROME_JUNK` list at the top of `reconstruct.py` contains regex patterns fo
 python3 reconstruct.py screenshots/ --junk "safari\s+file" "reading\s+list" -o book.pdf
 ```
 
+## Automating screenshots
+
+Taking 100+ screenshots by hand is tedious. Some options for automating it:
+
+- **AppleScript / Keyboard Maestro (macOS):** Script a loop that takes a screenshot (`screencapture`), then sends a right-arrow keypress to turn the page. Add a short delay (~1s) between pages to let the renderer settle. Works well with Google Play Books in full-screen Chrome.
+- **Selenium / Playwright:** Automate a headless browser to navigate Google Play Books, screenshot each page, and advance. More setup but fully hands-off. You'll need to handle login/cookies.
+- **Android screen recording + ffmpeg:** If using the mobile app, record a screen video while swiping through pages, then extract frames with `ffmpeg -i video.mp4 -vf "fps=1" page_%04d.png`. Requires tuning the frame rate to match your swipe speed.
+
+Whichever method you use, make sure screenshots are at least 1440px wide for decent OCR quality, and keep the browser zoom at 100%.
+
+## Future improvements
+
+- [ ] **LLM-powered OCR cleanup** — pipe Tesseract output through an API (Claude, GPT) automatically instead of requiring manual cleanup. Would make the full pipeline produce usable output in one shot.
+- [ ] **Page number detection** — extract page numbers from screenshots to verify ordering and detect missing pages.
+- [ ] **Multi-column layout support** — some e-books render in two columns; the current OCR reads them as one stream.
+- [ ] **Configurable page dimensions and fonts** — currently hardcoded to 6.5"x9" with Helvetica. Could accept a style config.
+- [ ] **Auto figure-to-caption matching** — the current heuristic (order of appearance) works for most books but fails when figures are referenced out of order.
+- [ ] **Table extraction** — tables in screenshots are currently treated as figures. Proper table detection + text extraction would produce searchable table content.
+- [ ] **EPUB output** — generate reflowable EPUB in addition to fixed-layout PDF.
+
 ## License
 
 MIT
